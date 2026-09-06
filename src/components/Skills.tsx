@@ -123,7 +123,7 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" ref={containerRef} className="relative py-32 bg-black overflow-hidden perspective-1000">
+    <section id="skills" ref={containerRef} className="relative py-32 bg-black overflow-visible perspective-1000">
       <div className="container mx-auto px-6 relative z-10">
         
         {/* Header */}

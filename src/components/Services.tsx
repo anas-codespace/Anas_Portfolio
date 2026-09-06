@@ -84,17 +84,12 @@ export default function Services() {
           {PORTFOLIO_DATA.services.map((service) => (
             <div 
               key={service.id} 
-              className="service-card glass rounded-3xl p-10 flex flex-col justify-between h-[400px] border border-white/5 hover:border-white/20 transition-colors group cursor-crosshair"
+              className="service-card glass rounded-3xl p-10 flex flex-col justify-center h-[400px] border border-white/5 hover:border-white/20 transition-colors group cursor-default"
             >
               <div>
-                <span className="text-5xl font-black text-white/10 mb-8 block">{service.id}</span>
+                <span className="text-5xl font-black text-white/10 mb-8 block group-hover:scale-110 group-hover:-translate-y-2 group-hover:text-white/20 transition-all duration-500 origin-left">{service.id}</span>
                 <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
                 <p className="text-gray-400 leading-relaxed">{service.description}</p>
-              </div>
-              <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
               </div>
             </div>
           ))}

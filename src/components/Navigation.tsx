@@ -27,8 +27,8 @@ export default function Navigation() {
   return (
     <nav
       className={clsx(
-        "fixed top-0 left-0 w-full z-50 transition-all duration-500 flex items-center justify-between px-8 md:px-12 py-6",
-        isScrolled ? "bg-black/80 backdrop-blur-md border-b border-white/5" : "bg-transparent"
+        "fixed top-0 left-0 w-full z-[100] transition-all duration-700 flex items-center justify-between px-8 md:px-12 py-6",
+        isScrolled ? "bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[2px] pb-10" : "bg-transparent"
       )}
     >
       {/* Left: Logo */}

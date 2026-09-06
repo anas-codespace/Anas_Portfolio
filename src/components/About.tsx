@@ -65,7 +65,7 @@ export default function About() {
   }, []);
 
   return (
-    <section id="about" ref={sectionRef} className="relative min-h-screen flex items-center py-24">
+    <section id="about" ref={sectionRef} className="relative min-h-screen flex items-center py-32 scroll-mt-20">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         
         <div ref={textRef} className="flex flex-col gap-8 z-10">

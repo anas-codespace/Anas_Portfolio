@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { PORTFOLIO_DATA } from "@/data/config";
 import { ArrowUpRight, Mail } from "lucide-react";
+import ThreePortrait from "./ThreePortrait";
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -91,7 +92,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={containerRef} className="relative min-h-screen w-full bg-black flex items-center overflow-hidden pt-20">
+    <section ref={containerRef} className="relative min-h-screen w-full bg-black flex items-center pt-32 pb-20">
       
       {/* --- BACKGROUND LAYERS --- */}
       <div className="absolute inset-0 bg-[#030305] -z-50" />
@@ -166,7 +167,7 @@ export default function Hero() {
       </div>
 
       {/* Terrain / Bottom fade */}
-      <div className="absolute bottom-0 left-0 w-full h-[45vh] bg-gradient-to-t from-[#020205] via-[#020205]/95 to-transparent z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-full h-[45vh] bg-gradient-to-t from-black via-black/95 to-transparent z-10 pointer-events-none" />
 
       {/* --- CONTENT CONTAINER --- */}
       <div className="container mx-auto px-8 relative z-20 w-full h-full flex flex-col md:flex-row items-center justify-between pb-10">
@@ -177,7 +178,7 @@ export default function Hero() {
           {/* Badge */}
           <div className="hero-fade flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-6">
             <span className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-            <span className="text-[10px] font-bold tracking-[0.2em] text-gray-300">VIBE CODER</span>
+            <span className="text-[10px] font-bold tracking-[0.2em] text-gray-300">DEVELOPER</span>
           </div>
 
           {/* Main Headline */}
@@ -189,7 +190,7 @@ export default function Hero() {
 
           {/* Subheadline */}
           <h2 className="hero-fade text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-gray-200 mb-6">
-            Vibe Coder. Developer. <span className="text-[#3b82f6] drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]">Builder.</span>
+            Developer. Vibe Coder. <span className="text-[#3b82f6] drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]">Builder.</span>
           </h2>
 
           {/* Description */}
@@ -254,16 +255,10 @@ export default function Hero() {
           {/* Small Glowing White Particle */}
           <div className="floating-obj float-4 absolute top-[75%] left-[20%] w-4 h-4 md:w-6 md:h-6 rounded-full bg-white shadow-[0_0_15px_rgba(255,255,255,1),0_0_40px_rgba(59,130,246,0.9)] pointer-events-none -z-10" />
 
-          <img 
-            ref={portraitRef}
-            src="/portrait.png" 
-            alt="Anas - Vibe Coder" 
-            className="w-auto h-full max-h-full object-contain object-bottom pointer-events-auto filter drop-shadow-[0_0_20px_rgba(0,0,0,0.5)] z-10 relative"
-            style={{ 
-              maskImage: 'linear-gradient(to bottom, black 70%, transparent 98%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 98%)'
-            }}
-          />
+          {/* The new True 3D Interactive Portrait */}
+          <div ref={portraitRef} className="absolute inset-0 z-10 flex justify-center items-end pointer-events-auto">
+            <ThreePortrait />
+          </div>
 
 
         </div>

@@ -7,9 +7,11 @@ import Projects from "@/components/Projects";
 import Startup from "@/components/Startup";
 import Contact from "@/components/Contact";
 
+import Chatbot from "@/components/Chatbot";
+
 export default function Home() {
   return (
-    <main className="relative">
+    <main className="relative overflow-x-hidden bg-black text-white">
       <div className="grain" />
       <Hero />
       <About />
@@ -18,6 +20,7 @@ export default function Home() {
       <Projects />
       <Startup />
       <Contact />
+      <Chatbot />
     </main>
   );
 }

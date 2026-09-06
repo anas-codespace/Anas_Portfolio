@@ -61,13 +61,13 @@ export default function Contact() {
         </div>
 
         {/* Footer */}
-        <footer className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-500 font-medium">
-          <div className="flex flex-col items-center md:items-start">
-            <span className="font-bold tracking-widest text-white mb-1">{PORTFOLIO_DATA.personal.name.toUpperCase()}</span>
-            <span>{PORTFOLIO_DATA.personal.title}</span>
+        <footer className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 text-sm text-gray-500 font-medium">
+          <div className="flex flex-col items-start">
+            <span className="font-bold tracking-widest text-white mb-1">ANAS</span>
+            <span>Developer · Vibe Coder · Builder</span>
           </div>
           
-          <p>© 2026 Anas. Built with code, AI & curiosity.</p>
+          <p className="md:text-right w-full md:w-auto text-left">© 2026 Anas. Built with code, AI & curiosity.</p>
         </footer>
       </div>
     </section>
