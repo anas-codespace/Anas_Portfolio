@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "Missing API Key" }), { status: 500 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const systemPrompt = `You are FIZZY, Anas' personal portfolio assistant.
 
