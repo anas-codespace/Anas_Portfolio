@@ -27,6 +27,7 @@ export default function Chatbot() {
   const [currentSection, setCurrentSection] = useState("HOME");
   
   const [isListening, setIsListening] = useState(false);
+  const [micLang, setMicLang] = useState<"en-IN" | "ta-IN">("en-IN");
   const recognitionRef = useRef<any>(null);
   const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
   
@@ -86,19 +87,29 @@ export default function Chatbot() {
     const cleanText = text.replace(/[*_#`~]/g, "").replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "");
     const utterance = new SpeechSynthesisUtterance(cleanText);
     
-    // Match Fizzy's specific tone from Mascot
-    utterance.pitch = 1.15; 
-    utterance.rate = 0.92; 
-    utterance.volume = 0.95;
+    const isTamil = /[\u0B80-\u0BFF]/.test(cleanText);
+    
+    // Match Fizzy's specific tone from Mascot for English, use default for Tamil
+    if (!isTamil) {
+      utterance.pitch = 1.15; 
+      utterance.rate = 0.92; 
+      utterance.volume = 0.95;
+    }
     
     const pickVoice = () => {
       const voices = window.speechSynthesis.getVoices();
-      const preferred =
-        voices.find((v) => v.name === "Google US English") ||
-        voices.find((v) => v.name === "Samantha") ||
-        voices.find((v) => v.name === "Karen") ||
-        voices.find((v) => v.name.includes("Google") && v.lang.startsWith("en")) ||
-        voices.find((v) => v.lang === "en-US" && !v.name.toLowerCase().includes("male"));
+      let preferred;
+      
+      if (isTamil) {
+        preferred = voices.find(v => v.lang.startsWith("ta"));
+      } else {
+        preferred =
+          voices.find((v) => v.name === "Google US English") ||
+          voices.find((v) => v.name === "Samantha") ||
+          voices.find((v) => v.name === "Karen") ||
+          voices.find((v) => v.name.includes("Google") && v.lang.startsWith("en")) ||
+          voices.find((v) => v.lang === "en-US" && !v.name.toLowerCase().includes("male"));
+      }
       
       if (preferred) {
         utterance.voice = preferred;
@@ -137,7 +148,7 @@ export default function Chatbot() {
     recognitionRef.current = recognition;
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = "en-US";
+    recognition.lang = micLang; // Use state for Tanglish(en-IN) / Tamil(ta-IN)
 
     let finalTranscript = inputValue;
 
@@ -392,10 +403,18 @@ export default function Chatbot() {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask FIZZY something..."
-              className="w-full bg-transparent text-sm text-white placeholder:text-gray-500 px-4 py-3.5 pr-20 outline-none resize-none max-h-32 scrollbar-thin"
+              className="w-full bg-transparent text-sm text-white placeholder:text-gray-500 px-4 py-3.5 pr-28 outline-none resize-none max-h-32 scrollbar-thin"
               rows={1}
             />
             <div className="absolute right-2 bottom-2 flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setMicLang(prev => prev === "en-IN" ? "ta-IN" : "en-IN")}
+                className="px-1.5 h-8 text-[10px] font-bold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded transition-colors"
+                title="Toggle Mic Language"
+              >
+                {micLang === "en-IN" ? "EN" : "தமிழ்"}
+              </button>
               <button
                 type="button"
                 onClick={toggleListening}
