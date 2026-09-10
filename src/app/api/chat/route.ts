@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "Missing API Key" }), { status: 500 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const systemPrompt = `You are FIZZY, Anas' personal portfolio assistant.
 
@@ -108,9 +108,12 @@ You are primarily a portfolio assistant. For unrelated questions (like "What is 
     } else if (errStr.includes("429") || errStr.includes("quota") || errStr.includes("exhausted")) {
       status = 429;
       message = "The AI service is currently busy or out of quota. Please try again later.";
-    } else if (errStr.includes("404") || errStr.includes("model")) {
+    } else if (errStr.includes("high demand") || errStr.includes("503")) {
       status = 503;
-      message = "The requested AI model is currently unavailable.";
+      message = "The AI is currently experiencing high demand. Please try again in a few seconds.";
+    } else if (errStr.includes("404")) {
+      status = 503;
+      message = "The requested AI model is currently unavailable or deprecated.";
     } else if (errStr.includes("400") || errStr.includes("validation")) {
       status = 400;
       message = "Invalid request format.";
