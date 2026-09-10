@@ -86,18 +86,38 @@ export default function Chatbot() {
     const cleanText = text.replace(/[*_#`~]/g, "");
     const utterance = new SpeechSynthesisUtterance(cleanText);
     
-    // Prefer English voices
-    const voices = window.speechSynthesis.getVoices();
-    const englishVoice = voices.find(v => v.lang.startsWith('en-US') && v.name.toLowerCase().includes('male')) || 
-                         voices.find(v => v.lang.startsWith('en'));
-    if (englishVoice) {
-      utterance.voice = englishVoice;
+    // Match Fizzy's specific tone from Mascot
+    utterance.pitch = 1.15; 
+    utterance.rate = 0.92; 
+    utterance.volume = 0.95;
+    
+    const pickVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const preferred =
+        voices.find((v) => v.name === "Google US English") ||
+        voices.find((v) => v.name === "Samantha") ||
+        voices.find((v) => v.name === "Karen") ||
+        voices.find((v) => v.name.includes("Google") && v.lang.startsWith("en")) ||
+        voices.find((v) => v.lang === "en-US" && !v.name.toLowerCase().includes("male"));
+      
+      if (preferred) {
+        utterance.voice = preferred;
+      }
+      
+      utterance.onend = () => setCurrentlySpeakingId(null);
+      utterance.onerror = () => setCurrentlySpeakingId(null);
+      
+      window.speechSynthesis.speak(utterance);
+    };
+
+    if (window.speechSynthesis.getVoices().length > 0) {
+      pickVoice();
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => {
+        pickVoice();
+        window.speechSynthesis.onvoiceschanged = null;
+      };
     }
-    
-    utterance.onend = () => setCurrentlySpeakingId(null);
-    utterance.onerror = () => setCurrentlySpeakingId(null);
-    
-    window.speechSynthesis.speak(utterance);
   };
 
   const toggleListening = () => {
