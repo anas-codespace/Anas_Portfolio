@@ -82,8 +82,8 @@ export default function Chatbot() {
     window.speechSynthesis.cancel();
     setCurrentlySpeakingId(msgId);
     
-    // Clean markdown syntax for better speech
-    const cleanText = text.replace(/[*_#`~]/g, "");
+    // Clean markdown syntax and remove emojis for better speech
+    const cleanText = text.replace(/[*_#`~]/g, "").replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "");
     const utterance = new SpeechSynthesisUtterance(cleanText);
     
     // Match Fizzy's specific tone from Mascot
