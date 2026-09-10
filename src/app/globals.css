@@ -4,6 +4,9 @@
 /* Hallmark · genre: atmospheric · macrostructure: Split Asymmetric · tone: austere-tech · anchor hue: jade 142 */
 
 @theme {
+  --font-display:      var(--font-display), sans-serif;
+  --font-body:         var(--font-body), sans-serif;
+
   --color-paper:       oklch(8% 0.01 250);
   --color-paper-2:     oklch(12% 0.012 250);
   --color-ink:         oklch(97% 0.005 90);
@@ -34,8 +37,12 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: var(--font-montserrat), sans-serif;
+    font-family: var(--font-body);
     overflow-x: clip;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
   }
 }
 

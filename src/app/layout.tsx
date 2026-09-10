@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Bricolage_Grotesque, Manrope } from "next/font/google";
 import "./globals.css";
 import SmoothScroller from "@/components/SmoothScroller";
 import Navigation from "@/components/Navigation";
 
-const montserrat = Montserrat({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-montserrat",
-  weight: ["300", "400", "500", "700", "900"],
+  variable: "--font-display",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-body",
 });
 
 export const metadata: Metadata = {
@@ -23,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${montserrat.variable} font-sans antialiased bg-black text-white`}
+        className={`${bricolage.variable} ${manrope.variable} font-body antialiased bg-black text-white`}
         suppressHydrationWarning
       >
         <SmoothScroller>
