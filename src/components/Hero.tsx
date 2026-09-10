@@ -45,13 +45,16 @@ export default function Hero() {
           "-=2"
         );
 
-        // Floating animation for geometries
-        gsap.to(".float-1", { y: -20, rotation: 15, duration: 4, yoyo: true, repeat: -1, ease: "sine.inOut" });
-        gsap.to(".float-2", { y: 25, rotation: -20, duration: 5, yoyo: true, repeat: -1, ease: "sine.inOut" });
-        gsap.to(".float-3", { x: 15, y: -15, rotation: 45, duration: 6, yoyo: true, repeat: -1, ease: "sine.inOut" });
-        gsap.to(".float-4", { y: -30, rotation: -10, duration: 7, yoyo: true, repeat: -1, ease: "sine.inOut" });
-        gsap.to(".float-5", { x: -10, y: 15, duration: 4.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
-        gsap.to(".float-6", { y: -25, rotation: 25, duration: 5.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+        // Floating animation for geometries — only when the user hasn't opted out of motion
+        const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!prefersReduced) {
+          gsap.to(".float-1", { y: -20, rotation: 15, duration: 4, yoyo: true, repeat: -1, ease: "sine.inOut" });
+          gsap.to(".float-2", { y: 25, rotation: -20, duration: 5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+          gsap.to(".float-3", { x: 15, y: -15, rotation: 45, duration: 6, yoyo: true, repeat: -1, ease: "sine.inOut" });
+          gsap.to(".float-4", { y: -30, rotation: -10, duration: 7, yoyo: true, repeat: -1, ease: "sine.inOut" });
+          gsap.to(".float-5", { x: -10, y: 15, duration: 4.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+          gsap.to(".float-6", { y: -25, rotation: 25, duration: 5.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+        }
 
         // Mouse Parallax
         if (window.innerWidth > 768) {
@@ -109,9 +112,10 @@ export default function Hero() {
         <circle cx="70%" cy="15%" r="2" fill="white" />
       </svg>
 
-      {/* Cinematic Nebula/Glows */}
-      <div className="absolute top-[20%] right-[20%] w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[150px] -z-40" />
-      <div className="absolute top-[50%] right-[30%] w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[130px] -z-40" />
+      {/* Single structured gradient — deliberate, not two ambient blobs */}
+      <div className="absolute top-0 right-0 w-[70%] h-full -z-40 pointer-events-none" style={{
+        background: "conic-gradient(from 210deg at 75% 40%, oklch(72% 0.18 142 / 0.06) 0deg, transparent 60deg, oklch(62% 0.16 232 / 0.04) 180deg, transparent 240deg)",
+      }} />
 
       {/* The glowing ring system */}
       <div className="bg-ring absolute top-[50%] right-[0%] md:right-[5%] -translate-y-1/2 w-[450px] h-[450px] md:w-[900px] md:h-[900px] rounded-full flex items-center justify-center -z-30 pointer-events-none">
@@ -123,46 +127,14 @@ export default function Hero() {
         <div className="w-[85%] h-[85%] rounded-full bg-blue-500/10 blur-[100px]" />
       </div>
 
-      {/* Floating 3D Geometries */}
-      <div className="floating-obj float-1 absolute top-[25%] left-[45%] w-12 h-12 opacity-80 z-0 pointer-events-none">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          <polygon points="50,5 85,25 50,55" fill="#444" />
-          <polygon points="50,5 50,55 15,25" fill="#888" />
-          <polygon points="15,25 50,55 25,85" fill="#222" />
-          <polygon points="50,55 85,25 75,85" fill="#111" />
-          <polygon points="50,55 75,85 25,85" fill="#0a0a0a" />
-        </svg>
-      </div>
-
-      {/* Massive bottom-left icosahedron */}
-      <div className="floating-obj float-2 absolute bottom-[10%] left-[25%] md:left-[35%] w-40 h-40 md:w-64 md:h-64 opacity-100 z-20 pointer-events-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)]">
+      {/* Single anchor geometry — bottom-left depth element */}
+      <div className="floating-obj float-2 absolute bottom-[10%] left-[25%] md:left-[35%] w-40 h-40 md:w-56 md:h-56 opacity-70 z-20 pointer-events-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)]">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
           <polygon points="50,5 85,35 50,65" fill="#999" />
           <polygon points="50,5 50,65 15,35" fill="#fff" />
           <polygon points="15,35 50,65 25,95" fill="#333" />
           <polygon points="50,65 85,35 75,95" fill="#111" />
           <polygon points="50,65 75,95 25,95" fill="#000" />
-        </svg>
-      </div>
-      
-      {/* --- RIGHT SIDE ELEMENTS (Photo Side) --- */}
-      {/* 1. Large dark asteroid/moon */}
-      <div className="floating-obj float-4 absolute top-[20%] -right-[5%] md:right-[0%] w-48 h-48 md:w-72 md:h-72 rounded-full bg-gradient-to-bl from-[#333] via-[#050505] to-black shadow-[inset_15px_15px_30px_rgba(255,255,255,0.1),0_0_40px_rgba(0,0,0,0.9)] z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[25%] left-[25%] w-12 h-12 rounded-full bg-black/60 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.9),inset_-1px_-1px_3px_rgba(255,255,255,0.1)] blur-[0.5px]" />
-        <div className="absolute bottom-[35%] right-[25%] w-16 h-16 rounded-full bg-black/80 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.9),inset_-1px_-1px_2px_rgba(255,255,255,0.1)] blur-[1px]" />
-      </div>
-      
-      {/* 2. Small bright white glowing circle */}
-      <div className="floating-obj float-5 absolute top-[12%] right-[15%] md:right-[18%] w-8 h-8 md:w-10 md:h-10 rounded-full bg-white shadow-[0_0_40px_rgba(255,255,255,1),0_0_80px_rgba(255,255,255,0.8),inset_-3px_-3px_8px_rgba(0,0,0,0.3)] z-20 pointer-events-none" />
-      
-      {/* 3. Mid-right rocky shape */}
-      <div className="floating-obj float-6 absolute bottom-[30%] right-[2%] md:right-[5%] w-24 h-24 md:w-32 md:h-32 opacity-90 z-20 pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.9)]">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          <polygon points="50,10 90,40 50,70" fill="#333" />
-          <polygon points="50,10 50,70 10,40" fill="#555" />
-          <polygon points="10,40 50,70 30,90" fill="#111" />
-          <polygon points="50,70 90,40 70,90" fill="#000" />
-          <polygon points="50,70 70,90 30,90" fill="#050505" />
         </svg>
       </div>
 
@@ -182,15 +154,15 @@ export default function Hero() {
           </div>
 
           {/* Main Headline */}
-          <h1 className="hero-fade text-[4rem] sm:text-[5.5rem] lg:text-[7rem] font-black tracking-tighter leading-[0.9] mb-4 w-full whitespace-nowrap">
+          <h1 className="hero-fade text-[3.5rem] sm:text-[5rem] lg:text-[6.5rem] font-black tracking-tighter leading-[0.9] mb-4 w-full" style={{ overflowWrap: "anywhere" }}>
             <span className="text-white">HEY. I'M</span> <br />
-            <span className="bg-gradient-to-r from-white via-[#9fb1ff] to-[#3b82f6] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(59,130,246,0.3)] pr-4 py-2 -my-2">ANAS</span>
-            <span className="text-[#3b82f6] drop-shadow-[0_0_15px_rgba(59,130,246,0.8)] -ml-4">.</span>
+            <span className="text-white pr-4 py-2 -my-2">ANAS</span>
+            <span style={{ color: "var(--color-accent)" }} className="-ml-2">.</span>
           </h1>
 
           {/* Subheadline */}
           <h2 className="hero-fade text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-gray-200 mb-6">
-            Developer. Vibe Coder. <span className="text-[#3b82f6] drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]">Builder.</span>
+            Developer. Vibe Coder. <span style={{ color: "var(--color-accent)" }}>Builder.</span>
           </h2>
 
           {/* Description */}
@@ -200,32 +172,31 @@ export default function Hero() {
 
           {/* Buttons */}
           <div className="hero-fade flex flex-wrap gap-5">
-            <a href="#projects" className="group flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-blue-600 shadow-[0_0_40px_rgba(79,70,229,0.6)] text-white font-bold tracking-widest text-xs rounded-full hover:shadow-[0_0_60px_rgba(79,70,229,0.9)] hover:scale-105 transition-all duration-300">
-              VIEW MY WORK
+            <a href="#projects" className="group flex items-center justify-center gap-3 px-8 py-4 text-black font-bold tracking-widest text-xs rounded-full hover:scale-105 transition-all duration-300" style={{ background: "var(--color-accent)", boxShadow: "0 0 30px var(--color-accent-glow)" }}>
+              View my work
               <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </a>
             <a 
-              href="mailto:anas.m77581@gmail.com?subject=Website%20Inquiry&body=Hi%20Anas,%0A%0AI'd%20like%20to%20discuss%20a%20website%20or%20digital%20project%20with%20you.%0A%0AThanks!" 
+              href={`mailto:anas.m77581@gmail.com?subject=Website%20Inquiry&body=Hi%20Anas,%0A%0AI'd%20like%20to%20discuss%20a%20website%20or%20digital%20project%20with%20you.%0A%0AThanks!`}
               className="group flex items-center justify-center gap-3 px-8 py-4 border border-white/20 bg-[#0a0a0a]/50 backdrop-blur-md text-white font-bold tracking-widest text-xs rounded-full hover:bg-white/10 hover:border-white/40 transition-colors duration-300"
               aria-label="Email Anas"
             >
-              LET'S BUILD
+              Let's build
               <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </a>
           </div>
 
           {/* Scroll Indicator */}
-          <div className="hero-fade mt-24 flex flex-col gap-4 hidden md:flex">
-            <span className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">SCROLL TO EXPLORE</span>
+          <div className="hero-fade mt-24 flex-col gap-4 hidden md:flex">
+            <span className="text-[10px] font-medium tracking-[0.2em] text-gray-600 uppercase">Scroll</span>
             <div className="flex items-center gap-4">
               <div className="w-5 h-8 border border-white/20 rounded-full flex justify-center p-1">
                 <div className="w-1 h-1 bg-white rounded-full animate-bounce" />
               </div>
-              <div className="w-32 h-[1px] bg-gradient-to-r from-gray-500 to-transparent relative">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1 bg-gray-400 rounded-full" />
-              </div>
+              <div className="w-24 h-[1px] bg-gradient-to-r from-gray-600 to-transparent" />
             </div>
           </div>
+
         </div>
 
         {/* RIGHT COLUMN: Portrait */}

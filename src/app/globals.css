@@ -1,10 +1,23 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Hallmark · genre: atmospheric · macrostructure: Split Asymmetric · tone: austere-tech · anchor hue: jade 142 */
+
 @theme {
-  --color-background: #050505;
-  --color-foreground: #ffffff;
-  --color-accent: #333333;
+  --color-paper:       oklch(8% 0.01 250);
+  --color-paper-2:     oklch(12% 0.012 250);
+  --color-ink:         oklch(97% 0.005 90);
+  --color-ink-2:       oklch(55% 0.008 250);
+  --color-rule:        oklch(22% 0.01 250);
+  --color-accent:      oklch(72% 0.18 142);
+  --color-accent-dim:  oklch(72% 0.18 142 / 0.15);
+  --color-accent-glow: oklch(72% 0.18 142 / 0.35);
+  --color-focus:       oklch(72% 0.18 142);
+
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --dur-short:   220ms;
+  --dur-med:     400ms;
 }
 
 @layer base {
@@ -15,13 +28,14 @@
 
   html {
     scroll-padding-top: 8rem;
+    overflow-x: clip;
   }
 
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-family: var(--font-montserrat), sans-serif;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 }
 
