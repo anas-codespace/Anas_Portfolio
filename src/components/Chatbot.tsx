@@ -12,13 +12,22 @@ type Message = {
 
 import FizzyMascot from "./FizzyMascot";
 
-const QUICK_PROMPTS = [
-  "Who is Anas?",
-  "Show me his projects",
-  "What does Anas do?",
-  "What is he currently building?",
-  "How can I contact him?",
-];
+const QUICK_PROMPTS = {
+  "en-IN": [
+    "Who is Anas?",
+    "Show me his projects",
+    "What does Anas do?",
+    "What is he currently building?",
+    "How can I contact him?",
+  ],
+  "ta-IN": [
+    "அனஸ் யார்?",
+    "அவர் ப்ராஜெக்ட்ஸ காட்டுங்க",
+    "அனஸ் என்ன பண்றாரு?",
+    "இப்போ என்ன பில்ட் பண்றாரு?",
+    "எப்படி காண்டாக்ட் பண்றது?",
+  ]
+};
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -366,8 +375,10 @@ export default function Chatbot() {
 
           {messages.length === 1 && (
             <div className="flex flex-col gap-2 mt-2">
-              <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-11 mb-1">Quick Prompts</p>
-              {QUICK_PROMPTS.map((prompt, i) => (
+              <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold ml-11 mb-1">
+                {micLang === "en-IN" ? "Quick Prompts" : "கேள்விகள்"}
+              </p>
+              {QUICK_PROMPTS[micLang].map((prompt, i) => (
                 <button
                   key={i}
                   onClick={() => sendMessage(prompt)}
