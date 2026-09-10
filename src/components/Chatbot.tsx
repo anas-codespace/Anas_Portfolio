@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Loader2, Mic, Volume2, VolumeX } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 type Message = {
@@ -26,11 +26,14 @@ export default function Chatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentSection, setCurrentSection] = useState("HOME");
   
+  const [isListening, setIsListening] = useState(false);
+  const [isVoiceActive, setIsVoiceActive] = useState(true);
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "init",
       role: "model",
-      content: "Hey 👋 I'm FIZZY, Anas' portfolio assistant.nnI can help you explore his projects, skills, current work and more.nnWhat would you like to know?",
+      content: "Hey 👋 I'm FIZZY, Anas' portfolio assistant.\n\nI can help you explore his projects, skills, current work and more.\n\nWhat would you like to know?",
     },
   ]);
   
@@ -64,6 +67,49 @@ export default function Chatbot() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const speakText = (text: string) => {
+    if (!isVoiceActive || !("speechSynthesis" in window)) return;
+    
+    // Stop any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    // Clean markdown syntax for better speech
+    const cleanText = text.replace(/[*_#`~]/g, "");
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    
+    // Prefer English voices
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice = voices.find(v => v.lang.startsWith('en-US') && v.name.toLowerCase().includes('male')) || 
+                         voices.find(v => v.lang.startsWith('en'));
+    if (englishVoice) {
+      utterance.voice = englishVoice;
+    }
+    
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const startListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Your browser does not support voice input.");
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInputValue((prev) => prev + (prev ? " " : "") + transcript);
+    };
+    recognition.onerror = () => setIsListening(false);
+
+    recognition.start();
+  };
+
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
@@ -71,6 +117,11 @@ export default function Chatbot() {
     setMessages((prev) => [...prev, newUserMsg]);
     setInputValue("");
     setIsLoading(true);
+
+    // Stop speaking if user sends a new message
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
 
     try {
       const response = await fetch("/api/chat", {
@@ -96,11 +147,13 @@ export default function Chatbot() {
       setMessages((prev) => [...prev, { id: botMsgId, role: "model", content: "" }]);
 
       let done = false;
+      let botFullContent = "";
       while (!done) {
         const { value, done: readerDone } = await reader.read();
         done = readerDone;
         if (value) {
           const chunk = decoder.decode(value, { stream: true });
+          botFullContent += chunk;
           setMessages((prev) => 
             prev.map((msg) => 
               msg.id === botMsgId ? { ...msg, content: msg.content + chunk } : msg
@@ -108,6 +161,12 @@ export default function Chatbot() {
           );
         }
       }
+      
+      // Speak the completed message
+      if (botFullContent) {
+        speakText(botFullContent);
+      }
+      
     } catch (error: any) {
       console.error(error);
       let errorMsg = error.message;
@@ -119,6 +178,7 @@ export default function Chatbot() {
         ...prev,
         { id: Date.now().toString(), role: "model", content: "⚠️ " + errorMsg }
       ]);
+      speakText(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -169,13 +229,23 @@ export default function Chatbot() {
               <p className="text-xs text-gray-400">Anas' Portfolio Assistant</p>
             </div>
           </div>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="text-gray-400 hover:text-white transition-colors p-1"
-            aria-label="Close Chat"
-          >
-            <X size={20} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsVoiceActive(!isVoiceActive)}
+              className={`p-1.5 rounded-lg transition-colors ${isVoiceActive ? 'text-blue-400 bg-blue-500/10' : 'text-gray-500 hover:text-white hover:bg-white/10'}`}
+              title={isVoiceActive ? "Mute FIZZY" : "Unmute FIZZY"}
+              aria-label="Toggle Voice"
+            >
+              {isVoiceActive ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            </button>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-400 hover:text-white transition-colors p-1"
+              aria-label="Close Chat"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         <div 
@@ -256,17 +326,30 @@ export default function Chatbot() {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask FIZZY something..."
-              className="w-full bg-transparent text-sm text-white placeholder:text-gray-500 px-4 py-3.5 outline-none resize-none max-h-32 scrollbar-thin"
+              className="w-full bg-transparent text-sm text-white placeholder:text-gray-500 px-4 py-3.5 pr-20 outline-none resize-none max-h-32 scrollbar-thin"
               rows={1}
             />
-            <button
-              type="submit"
-              disabled={!inputValue.trim() || isLoading}
-              className="absolute right-2 bottom-2 w-8 h-8 rounded-lg bg-blue-500 text-white flex justify-center items-center disabled:opacity-50 disabled:bg-white/10 transition-colors"
-              aria-label="Send message"
-            >
-              <Send size={14} className="ml-0.5" />
-            </button>
+            <div className="absolute right-2 bottom-2 flex items-center gap-1">
+              <button
+                type="button"
+                onClick={startListening}
+                className={`w-8 h-8 rounded-lg flex justify-center items-center transition-colors ${
+                  isListening ? "bg-red-500/20 text-red-500 animate-pulse" : "text-gray-400 hover:text-white hover:bg-white/10"
+                }`}
+                aria-label="Voice input"
+                title="Speak to FIZZY"
+              >
+                <Mic size={16} />
+              </button>
+              <button
+                type="submit"
+                disabled={!inputValue.trim() || isLoading}
+                className="w-8 h-8 rounded-lg bg-blue-500 text-white flex justify-center items-center disabled:opacity-50 disabled:bg-white/10 transition-colors"
+                aria-label="Send message"
+              >
+                <Send size={14} className="ml-0.5" />
+              </button>
+            </div>
           </form>
         </div>
       </div>
