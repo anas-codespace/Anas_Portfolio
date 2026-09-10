@@ -98,19 +98,20 @@ export default function Chatbot() {
     
     const isTamil = /[\u0B80-\u0BFF]/.test(cleanText);
     
-    // Match Fizzy's specific tone from Mascot for English, use default for Tamil
-    if (!isTamil) {
-      utterance.pitch = 1.15; 
-      utterance.rate = 0.92; 
-      utterance.volume = 0.95;
-    }
+    // Match Fizzy's specific tone from Mascot for all voices
+    utterance.pitch = 1.15; 
+    utterance.rate = 0.92; 
+    utterance.volume = 0.95;
     
     const pickVoice = () => {
       const voices = window.speechSynthesis.getVoices();
       let preferred;
       
       if (isTamil) {
-        preferred = voices.find(v => v.lang.startsWith("ta"));
+        preferred = 
+          voices.find(v => v.name.includes("Google") && v.lang.startsWith("ta") && !v.name.toLowerCase().includes("male")) ||
+          voices.find(v => v.lang.startsWith("ta") && !v.name.toLowerCase().includes("male")) ||
+          voices.find(v => v.lang.startsWith("ta"));
       } else {
         preferred =
           voices.find((v) => v.name === "Google US English") ||
