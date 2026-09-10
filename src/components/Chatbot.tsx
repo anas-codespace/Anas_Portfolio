@@ -27,7 +27,8 @@ export default function Chatbot() {
   const [currentSection, setCurrentSection] = useState("HOME");
   
   const [isListening, setIsListening] = useState(false);
-  const [isVoiceActive, setIsVoiceActive] = useState(true);
+  const recognitionRef = useRef<any>(null);
+  const [currentlySpeakingId, setCurrentlySpeakingId] = useState<string | null>(null);
   
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -67,11 +68,19 @@ export default function Chatbot() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const speakText = (text: string) => {
-    if (!isVoiceActive || !("speechSynthesis" in window)) return;
+  const speakText = (msgId: string, text: string) => {
+    if (!("speechSynthesis" in window)) return;
+    
+    // If clicking play on the currently speaking message, stop it.
+    if (currentlySpeakingId === msgId) {
+      window.speechSynthesis.cancel();
+      setCurrentlySpeakingId(null);
+      return;
+    }
     
     // Stop any ongoing speech
     window.speechSynthesis.cancel();
+    setCurrentlySpeakingId(msgId);
     
     // Clean markdown syntax for better speech
     const cleanText = text.replace(/[*_#`~]/g, "");
@@ -85,33 +94,65 @@ export default function Chatbot() {
       utterance.voice = englishVoice;
     }
     
+    utterance.onend = () => setCurrentlySpeakingId(null);
+    utterance.onerror = () => setCurrentlySpeakingId(null);
+    
     window.speechSynthesis.speak(utterance);
   };
 
-  const startListening = () => {
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Your browser does not support voice input.");
       return;
     }
+    
     const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    recognitionRef.current = recognition;
+    recognition.continuous = true;
+    recognition.interimResults = true;
     recognition.lang = "en-US";
+
+    let finalTranscript = inputValue;
 
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setInputValue((prev) => prev + (prev ? " " : "") + transcript);
-    };
     recognition.onerror = () => setIsListening(false);
+
+    recognition.onresult = (event: any) => {
+      let interimTranscript = '';
+      let newFinal = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          newFinal += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+      
+      if (newFinal) {
+        finalTranscript += (finalTranscript ? " " : "") + newFinal;
+      }
+      
+      setInputValue(finalTranscript + (interimTranscript ? " " + interimTranscript : ""));
+    };
 
     recognition.start();
   };
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    }
 
     const newUserMsg: Message = { id: Date.now().toString(), role: "user", content: text };
     setMessages((prev) => [...prev, newUserMsg]);
@@ -121,6 +162,7 @@ export default function Chatbot() {
     // Stop speaking if user sends a new message
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
+      setCurrentlySpeakingId(null);
     }
 
     try {
@@ -147,24 +189,17 @@ export default function Chatbot() {
       setMessages((prev) => [...prev, { id: botMsgId, role: "model", content: "" }]);
 
       let done = false;
-      let botFullContent = "";
       while (!done) {
         const { value, done: readerDone } = await reader.read();
         done = readerDone;
         if (value) {
           const chunk = decoder.decode(value, { stream: true });
-          botFullContent += chunk;
           setMessages((prev) => 
             prev.map((msg) => 
               msg.id === botMsgId ? { ...msg, content: msg.content + chunk } : msg
             )
           );
         }
-      }
-      
-      // Speak the completed message
-      if (botFullContent) {
-        speakText(botFullContent);
       }
       
     } catch (error: any) {
@@ -178,7 +213,6 @@ export default function Chatbot() {
         ...prev,
         { id: Date.now().toString(), role: "model", content: "⚠️ " + errorMsg }
       ]);
-      speakText(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -231,14 +265,6 @@ export default function Chatbot() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setIsVoiceActive(!isVoiceActive)}
-              className={`p-1.5 rounded-lg transition-colors ${isVoiceActive ? 'text-blue-400 bg-blue-500/10' : 'text-gray-500 hover:text-white hover:bg-white/10'}`}
-              title={isVoiceActive ? "Mute FIZZY" : "Unmute FIZZY"}
-              aria-label="Toggle Voice"
-            >
-              {isVoiceActive ? <Volume2 size={16} /> : <VolumeX size={16} />}
-            </button>
-            <button
               onClick={() => setIsOpen(false)}
               className="text-gray-400 hover:text-white transition-colors p-1"
               aria-label="Close Chat"
@@ -271,17 +297,37 @@ export default function Chatbot() {
                 )}
               </div>
 
-              <div
-                className={`max-w-[80%] p-3.5 text-sm leading-relaxed ${
-                  msg.role === "user"
-                    ? "bg-white/10 text-white rounded-2xl rounded-tr-sm"
-                    : "bg-blue-500/10 border border-blue-500/20 text-gray-200 rounded-2xl rounded-tl-sm prose prose-invert prose-p:my-1 prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white"
-                }`}
-              >
-                {msg.role === "user" ? (
-                  <div style={{ whiteSpace: "pre-wrap" }}>{msg.content}</div>
-                ) : (
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+              <div className="flex flex-col gap-1 max-w-[80%]">
+                <div
+                  className={`p-3.5 text-sm leading-relaxed ${
+                    msg.role === "user"
+                      ? "bg-white/10 text-white rounded-2xl rounded-tr-sm"
+                      : "bg-blue-500/10 border border-blue-500/20 text-gray-200 rounded-2xl rounded-tl-sm prose prose-invert prose-p:my-1 prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white"
+                  }`}
+                >
+                  {msg.role === "user" ? (
+                    <div style={{ whiteSpace: "pre-wrap" }}>{msg.content}</div>
+                  ) : (
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  )}
+                </div>
+                
+                {/* On-demand Play/Stop button for AI messages */}
+                {msg.role === "model" && msg.content && (
+                  <button
+                    onClick={() => speakText(msg.id, msg.content)}
+                    className="flex items-center gap-1.5 self-start px-2 py-1 mt-0.5 text-[10px] uppercase tracking-wider font-bold text-gray-500 hover:text-white hover:bg-white/10 rounded transition-colors"
+                  >
+                    {currentlySpeakingId === msg.id ? (
+                      <>
+                        <VolumeX size={12} /> Stop
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 size={12} /> Play
+                      </>
+                    )}
+                  </button>
                 )}
               </div>
             </div>
@@ -332,7 +378,7 @@ export default function Chatbot() {
             <div className="absolute right-2 bottom-2 flex items-center gap-1">
               <button
                 type="button"
-                onClick={startListening}
+                onClick={toggleListening}
                 className={`w-8 h-8 rounded-lg flex justify-center items-center transition-colors ${
                   isListening ? "bg-red-500/20 text-red-500 animate-pulse" : "text-gray-400 hover:text-white hover:bg-white/10"
                 }`}
