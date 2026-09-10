@@ -147,11 +147,10 @@ export default function Hero() {
         {/* LEFT COLUMN: Typography & CTAs */}
         <div className="w-full md:w-1/2 flex flex-col items-start justify-center pt-20 md:pt-0">
           
-          {/* Badge */}
-          <div className="hero-fade flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm mb-6">
-            <span className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-            <span className="text-[10px] font-bold tracking-[0.2em] text-gray-300">DEVELOPER</span>
-          </div>
+          {/* Eyebrow — no pill, just editorial mono text */}
+          <p className="hero-fade font-mono text-xs text-gray-500 mb-8 tracking-wider">
+            <span style={{ color: "var(--color-accent)" }}>*</span>&nbsp;&nbsp;bca student &nbsp;·&nbsp; india &nbsp;·&nbsp; open to work
+          </p>
 
           {/* Main Headline */}
           <h1 className="hero-fade text-[3.5rem] sm:text-[5rem] lg:text-[6.5rem] font-black tracking-tighter leading-[0.9] mb-4 w-full" style={{ overflowWrap: "anywhere" }}>
@@ -202,29 +201,15 @@ export default function Hero() {
         {/* RIGHT COLUMN: Portrait */}
         <div className="w-full md:w-1/2 relative flex justify-center items-end h-[60vh] md:h-[80vh] lg:h-[90vh] mt-10 md:mt-0 pointer-events-none z-10">
           
-          {/* Glowing Circles Behind Portrait */}
-          <div className="bg-ring absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[550px] lg:h-[550px] rounded-full border border-blue-400/40 shadow-[0_0_50px_rgba(59,130,246,0.4),inset_0_0_30px_rgba(59,130,246,0.2)] pointer-events-none -z-10" />
-          <div className="bg-ring absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] sm:w-[480px] sm:h-[480px] lg:w-[680px] lg:h-[680px] rounded-full border border-blue-300/10 border-dashed pointer-events-none -z-10 animate-[spin_60s_linear_infinite]" />
+          {/* Subtle ring behind portrait — one ring, jade tint */}
+          <div className="bg-ring absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[520px] lg:h-[520px] rounded-full pointer-events-none -z-10"
+            style={{ border: "1px solid oklch(72% 0.18 142 / 0.2)", boxShadow: "0 0 60px oklch(72% 0.18 142 / 0.08), inset 0 0 30px oklch(72% 0.18 142 / 0.04)" }}
+          />
 
-          {/* Floating Blue Sphere */}
-          <div className="floating-obj float-1 absolute top-[25%] left-[15%] w-10 h-10 md:w-14 md:h-14 rounded-full bg-blue-500 shadow-[0_0_30px_rgba(59,130,246,1),inset_-5px_-5px_15px_rgba(0,0,0,0.6),inset_5px_5px_15px_rgba(255,255,255,0.7)] pointer-events-none -z-10" />
-
-          {/* 3D Dark Geometry */}
-          <svg className="floating-obj float-2 absolute top-[65%] right-[5%] w-20 h-20 md:w-28 md:h-28 opacity-90 drop-shadow-[0_0_20px_rgba(0,0,0,0.9)] pointer-events-none -z-10" viewBox="0 0 100 100" fill="none">
-            <polygon points="50,10 90,30 50,55 10,30" fill="#2a2a2a" />
-            <polygon points="10,30 50,55 50,95 10,75" fill="#111111" />
-            <polygon points="90,30 90,75 50,95 50,55" fill="#1a1a1a" />
-            <polygon points="50,10 10,30 10,75 50,95 90,75 90,30" stroke="#3b82f6" strokeWidth="0.5" strokeOpacity="0.4" fill="none" />
-          </svg>
-
-          {/* Wireframe Sci-fi Object */}
-          <svg className="floating-obj float-3 absolute top-[30%] right-[15%] w-12 h-12 md:w-16 md:h-16 opacity-70 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)] pointer-events-none -z-10" viewBox="0 0 100 100" fill="none">
-            <circle cx="50" cy="50" r="45" stroke="#3b82f6" strokeWidth="1" strokeDasharray="4 4" />
-            <polygon points="50,15 85,50 50,85 15,50" stroke="#3b82f6" strokeWidth="1.5" fill="rgba(59,130,246,0.15)" />
-          </svg>
-
-          {/* Small Glowing White Particle */}
-          <div className="floating-obj float-4 absolute top-[75%] left-[20%] w-4 h-4 md:w-6 md:h-6 rounded-full bg-white shadow-[0_0_15px_rgba(255,255,255,1),0_0_40px_rgba(59,130,246,0.9)] pointer-events-none -z-10" />
+          {/* Small glowing white particle — depth */}
+          <div className="floating-obj float-4 absolute top-[75%] left-[20%] w-3 h-3 md:w-4 md:h-4 rounded-full bg-white/80 pointer-events-none -z-10"
+            style={{ boxShadow: "0 0 12px rgba(255,255,255,0.9), 0 0 30px oklch(72% 0.18 142 / 0.4)" }}
+          />
 
           {/* The new True 3D Interactive Portrait */}
           <div ref={portraitRef} className="absolute inset-0 z-10 flex justify-center items-end pointer-events-auto">
@@ -252,7 +237,7 @@ export default function Hero() {
         </a>
         <div className="flex flex-col items-center mt-2">
           <div className="w-[1px] h-12 bg-gradient-to-b from-white/30 to-transparent" />
-          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.9)] mt-1" />
+          <div className="w-1.5 h-1.5 rounded-full mt-1" style={{ background: "var(--color-accent)", boxShadow: "0 0 10px var(--color-accent-glow)" }} />
         </div>
       </div>
 

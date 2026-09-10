@@ -44,7 +44,7 @@ export default function Projects() {
     <section id="projects" ref={containerRef} className="relative py-32 bg-zinc-950">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-20">
-          THINGS I'VE BUILT.
+          Things I've built.
         </h2>
 
         <div className="space-y-32">
@@ -86,7 +86,7 @@ export default function Projects() {
               </div>
               
               <div className={`w-full md:w-1/2 flex flex-col gap-6 ${index % 2 !== 0 ? 'md:order-1 md:items-end md:text-right' : ''}`}>
-                <span className="text-sm tracking-widest font-bold text-gray-500">PROJECT {project.id}</span>
+                <span className="text-sm tracking-widest font-bold text-gray-500">Project {project.id}</span>
                 <h3 className="text-3xl md:text-5xl font-bold">{project.name}</h3>
                 
                 <p className="text-gray-400 text-lg leading-relaxed glass p-6 rounded-xl border-l-4 border-l-white/20">
@@ -112,7 +112,7 @@ export default function Projects() {
                       <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
                       <path d="M9 18c-4.51 2-5-2-7-2"/>
                     </svg>
-                    GITHUB
+                    Source code
                   </a>
                   {project.liveDemo && project.liveDemo !== "No Live Demo — College Final-Year Project" && (
                     <a 
@@ -122,7 +122,7 @@ export default function Projects() {
                       className="flex items-center gap-2 px-6 py-3 bg-white text-black hover:bg-gray-200 font-semibold rounded-full transition-all"
                     >
                       <ExternalLink size={18} />
-                      LIVE DEMO
+                      Live demo
                     </a>
                   )}
                 </div>

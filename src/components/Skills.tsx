@@ -67,14 +67,17 @@ export default function Skills() {
           { scale: 1, opacity: 1, rotationY: 0, duration: 1.5, ease: "power3.out", scrollTrigger: { trigger: containerRef.current, start: "top 60%" } }
         );
 
-        // Slow idle rotation for the center orb
-        gsap.to(".vibe-orb-inner", {
-          rotationY: 360,
-          rotationX: 360,
-          duration: 40,
-          repeat: -1,
-          ease: "none",
-        });
+        // Slow idle rotation for the center orb — gated for accessibility
+        const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!prefersReduced) {
+          gsap.to(".vibe-orb-inner", {
+            rotationY: 360,
+            rotationX: 360,
+            duration: 40,
+            repeat: -1,
+            ease: "none",
+          });
+        }
 
         // Categories reveal
         gsap.fromTo(
@@ -129,7 +132,7 @@ export default function Skills() {
         {/* Header */}
         <div className="skills-header text-center mb-24 max-w-2xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6">
-            TOOLS I SPEAK.
+            Tools I speak.
           </h2>
           <p className="text-lg text-gray-400">
             Technologies, tools and workflows I use to turn ideas into digital experiences.
@@ -162,7 +165,6 @@ export default function Skills() {
                 <div className="vibe-orb-inner absolute inset-0 rounded-full border border-white/10 rotate-45" style={{ transformStyle: 'preserve-3d' }} />
                 <div className="vibe-orb-inner absolute inset-0 rounded-full border border-white/10 -rotate-45" style={{ transformStyle: 'preserve-3d' }} />
                 
-                {/* Content */}
                 <div 
                   className={clsx(
                     "group relative z-10 p-10 rounded-full glass border-white/20 flex flex-col items-center justify-center text-center transition-all duration-500 cursor-default shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)] hover:scale-105 hover:bg-white/10",
@@ -171,8 +173,8 @@ export default function Skills() {
                   onMouseEnter={() => setHoveredSkill("Vibe Coding")}
                   onMouseLeave={() => setHoveredSkill(null)}
                 >
-                  <span className="text-xs font-bold tracking-[0.3em] text-gray-400 mb-2 group-hover:text-white transition-colors">CORE WORKFLOW</span>
-                  <h3 className="text-3xl lg:text-4xl font-black tracking-tighter leading-none mb-3">VIBE <br /> CODING</h3>
+                  <span className="text-xs font-bold tracking-[0.3em] text-gray-400 mb-2 group-hover:text-white transition-colors uppercase">Core workflow</span>
+                  <h3 className="text-3xl lg:text-4xl font-black tracking-tighter leading-none mb-3">Vibe <br /> coding</h3>
                   
                   {/* Subtle description appears on hover */}
                   <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:mt-2">
@@ -208,8 +210,8 @@ export default function Skills() {
             <div className="relative w-64 h-64 flex items-center justify-center">
               <div className="absolute inset-0 bg-white/5 rounded-full blur-[40px]" />
               <div className="relative z-10 p-8 rounded-full glass border-white/20 flex flex-col items-center justify-center text-center shadow-[0_0_40px_rgba(255,255,255,0.05)]">
-                <span className="text-[10px] font-bold tracking-[0.3em] text-gray-400 mb-2">CORE WORKFLOW</span>
-                <h3 className="text-3xl font-black tracking-tighter leading-none mb-4">VIBE <br /> CODING</h3>
+                <span className="text-[10px] font-bold tracking-[0.3em] text-gray-400 mb-2 uppercase">Core workflow</span>
+                <h3 className="text-3xl font-black tracking-tighter leading-none mb-4">Vibe <br /> coding</h3>
                 <p className="text-xs text-gray-400">My approach to building ideas rapidly with code + AI.</p>
               </div>
             </div>
