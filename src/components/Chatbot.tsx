@@ -217,8 +217,16 @@ export default function Chatbot() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "API response not ok");
+        let serverError = "";
+        try {
+          const errorData = await response.json();
+          serverError = errorData?.error;
+        } catch (_) {
+          try {
+            serverError = await response.text();
+          } catch (_) {}
+        }
+        throw new Error(serverError || `Connection error (${response.status})`);
       }
 
       if (!response.body) throw new Error("No readable stream");
@@ -245,15 +253,19 @@ export default function Chatbot() {
       
     } catch (error: any) {
       console.error(error);
-      let errorMsg = error.message;
-      if (!errorMsg || errorMsg === "API response not ok") {
+      let errorMsg = error?.message;
+      if (!errorMsg || errorMsg === "API response not ok" || errorMsg.includes("Failed to fetch")) {
         errorMsg = "Sorry, I'm having a little trouble connecting right now. Please try again in a moment. 😊";
       }
       
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now().toString(), role: "model", content: "⚠️ " + errorMsg }
-      ]);
+      setMessages((prev) => {
+        // If an empty bot message was added at the end before stream failed, replace it
+        const lastMsg = prev[prev.length - 1];
+        if (lastMsg && lastMsg.role === "model" && !lastMsg.content) {
+          return prev.map((m, idx) => idx === prev.length - 1 ? { ...m, content: "⚠️ " + errorMsg } : m);
+        }
+        return [...prev, { id: Date.now().toString(), role: "model", content: "⚠️ " + errorMsg }];
+      });
     } finally {
       setIsLoading(false);
     }

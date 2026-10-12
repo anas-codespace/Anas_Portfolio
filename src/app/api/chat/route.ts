@@ -3,6 +3,15 @@ import { PORTFOLIO_DATA } from "@/data/portfolio";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
+const CANDIDATE_MODELS = [
+  "gemini-3.5-flash",
+  "gemini-3.6-flash",
+  "gemini-flash-latest",
+  "gemini-3.5-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-3-flash-preview",
+];
+
 export async function POST(req: Request) {
   try {
     const { messages, currentSection } = await req.json();
@@ -10,8 +19,6 @@ export async function POST(req: Request) {
     if (!process.env.GEMINI_API_KEY) {
       return new Response(JSON.stringify({ error: "Missing API Key" }), { status: 500 });
     }
-
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const systemPrompt = `You are FIZZY, Anas' personal portfolio assistant.
 
@@ -60,16 +67,34 @@ You are primarily a portfolio assistant. For unrelated questions (like "What is 
       rawHistory.shift();
     }
 
-    const chat = model.startChat({
-      systemInstruction: {
-        role: "system",
-        parts: [{ text: systemPrompt }],
-      },
-      history: rawHistory,
-    });
-
     const lastMessage = messages[messages.length - 1].content;
-    const result = await chat.sendMessageStream(lastMessage);
+
+    let result: any = null;
+    let lastError: any = null;
+
+    for (const modelName of CANDIDATE_MODELS) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const chat = model.startChat({
+          systemInstruction: {
+            role: "system",
+            parts: [{ text: systemPrompt }],
+          },
+          history: rawHistory,
+        });
+
+        result = await chat.sendMessageStream(lastMessage);
+        // If start stream was successful, break out of the candidate loop
+        break;
+      } catch (err: any) {
+        console.warn(`[FIZZY] Model ${modelName} failed (${err?.message || "error"}). Trying next candidate...`);
+        lastError = err;
+      }
+    }
+
+    if (!result) {
+      throw lastError || new Error("All candidate AI models are currently unavailable.");
+    }
 
     const stream = new ReadableStream({
       async start(controller) {
