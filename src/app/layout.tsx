@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Manrope } from "next/font/google";
 import "./globals.css";
 import SmoothScroller from "@/components/SmoothScroller";
 import Navigation from "@/components/Navigation";
+import { Analytics } from "@vercel/analytics/next";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
           <Navigation />
           {children}
         </SmoothScroller>
+        <Analytics />
       </body>
     </html>
   );
