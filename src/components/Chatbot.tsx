@@ -296,7 +296,7 @@ export default function Chatbot() {
       />
 
       <div
-        className={`fixed bottom-6 right-6 md:bottom-8 md:right-8 w-[calc(100vw-3rem)] md:w-[420px] h-[520px] max-h-[80vh] bg-zinc-950/98 backdrop-blur-sm border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)] z-50 transition-all duration-300 origin-bottom-right ${
+        className={`fixed bottom-6 right-6 md:bottom-8 md:right-8 w-[calc(100vw-3rem)] md:w-[420px] h-[520px] max-h-[80vh] liquid-glass rounded-3xl flex flex-col overflow-hidden shadow-[0_24px_60px_-15px_rgba(0,0,0,0.85)] z-50 transition-all duration-300 origin-bottom-right ${
           isOpen ? "scale-100 opacity-100 pointer-events-auto" : "scale-90 opacity-0 pointer-events-none"
         }`}
       >
@@ -417,10 +417,10 @@ export default function Chatbot() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-4 bg-white/5 border-t border-white/10">
+        <div className="p-3.5 bg-black/40 border-t border-white/10 backdrop-blur-md">
           <form
             onSubmit={handleSend}
-            className="relative flex items-center bg-black/40 border border-white/10 rounded-xl overflow-hidden focus-within:border-blue-500/50 transition-colors"
+            className="relative flex items-center liquid-glass-subtle rounded-2xl overflow-hidden focus-within:border-blue-400/50 transition-colors"
           >
             <textarea
               value={inputValue}

@@ -2,245 +2,253 @@
 
 import { useEffect, useRef } from "react";
 import { PORTFOLIO_DATA } from "@/data/config";
-import { ArrowUpRight, Mail } from "lucide-react";
-import ThreePortrait from "./ThreePortrait";
+import { ArrowUpRight, Sparkles, Terminal } from "lucide-react";
 
 export default function Hero() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const portraitRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
+  const portraitRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadGSAP = async () => {
       const gsap = (await import("gsap")).default;
-      const ScrollTrigger = (await import("gsap/ScrollTrigger")).default;
-      gsap.registerPlugin(ScrollTrigger);
 
       const ctx = gsap.context(() => {
-        const tl = gsap.timeline();
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
         tl.fromTo(
           ".hero-fade",
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.2, stagger: 0.1, ease: "power3.out", delay: 0.2 }
+          { y: 24, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.9, stagger: 0.08, delay: 0.15 }
         );
 
         tl.fromTo(
           portraitRef.current,
-          { opacity: 0, scale: 0.95, filter: "brightness(0.5)" },
-          { opacity: 1, scale: 1, filter: "brightness(1)", duration: 2, ease: "power2.out" },
-          "-=1"
+          { opacity: 0, scale: 0.96 },
+          { opacity: 1, scale: 1, duration: 1.1, ease: "power2.out" },
+          "-=0.7"
         );
 
-        tl.fromTo(
-          ".bg-ring",
-          { opacity: 0, scale: 0.8 },
-          { opacity: 1, scale: 1, duration: 3, ease: "power2.out" },
-          "-=2"
-        );
-        
-        tl.fromTo(
-          ".floating-obj",
-          { opacity: 0, y: 50 },
-          { opacity: 1, y: 0, duration: 2, stagger: 0.2, ease: "power2.out" },
-          "-=2"
-        );
-
-        // Floating animation for geometries — only when the user hasn't opted out of motion
+        // Smooth non-intrusive mouse parallax for portrait on desktop
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (!prefersReduced) {
-          gsap.to(".float-1", { y: -20, rotation: 15, duration: 4, yoyo: true, repeat: -1, ease: "sine.inOut" });
-          gsap.to(".float-2", { y: 25, rotation: -20, duration: 5, yoyo: true, repeat: -1, ease: "sine.inOut" });
-          gsap.to(".float-3", { x: 15, y: -15, rotation: 45, duration: 6, yoyo: true, repeat: -1, ease: "sine.inOut" });
-          gsap.to(".float-4", { y: -30, rotation: -10, duration: 7, yoyo: true, repeat: -1, ease: "sine.inOut" });
-          gsap.to(".float-5", { x: -10, y: 15, duration: 4.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
-          gsap.to(".float-6", { y: -25, rotation: 25, duration: 5.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
-        }
-
-        // Mouse Parallax
-        if (window.innerWidth > 768) {
+        if (!prefersReduced && window.innerWidth > 1024) {
           const hero = containerRef.current;
-          if (hero) {
-            hero.addEventListener("mousemove", (e) => {
-              const { clientX, clientY } = e;
-              const xPos = (clientX / window.innerWidth - 0.5) * 2;
-              const yPos = (clientY / window.innerHeight - 0.5) * 2;
+          if (hero && portraitRef.current) {
+            const handleMouseMove = (e: MouseEvent) => {
+              const rect = hero.getBoundingClientRect();
+              const xPos = (e.clientX - rect.left) / rect.width - 0.5;
+              const yPos = (e.clientY - rect.top) / rect.height - 0.5;
 
               gsap.to(portraitRef.current, {
-                x: xPos * -15,
-                y: yPos * -10,
-                duration: 1,
-                ease: "power2.out"
+                x: xPos * 18,
+                y: yPos * 14,
+                duration: 1.2,
+                ease: "power2.out",
+                overwrite: "auto",
               });
+            };
 
-              gsap.to(".bg-ring", { x: xPos * 20, y: yPos * 15, duration: 1.5, ease: "power2.out" });
-              gsap.to(".floating-obj", { x: xPos * 40, y: yPos * 30, duration: 2, ease: "power2.out" });
-            });
-            
-            hero.addEventListener("mouseleave", () => {
-              gsap.to([portraitRef.current, ".bg-ring", ".floating-obj"], {
+            const handleMouseLeave = () => {
+              gsap.to(portraitRef.current, {
                 x: 0,
                 y: 0,
-                duration: 1.5,
-                ease: "power2.out"
+                duration: 1.2,
+                ease: "power2.out",
+                overwrite: "auto",
               });
-            });
+            };
+
+            hero.addEventListener("mousemove", handleMouseMove);
+            hero.addEventListener("mouseleave", handleMouseLeave);
+
+            return () => {
+              hero.removeEventListener("mousemove", handleMouseMove);
+              hero.removeEventListener("mouseleave", handleMouseLeave);
+            };
           }
         }
       }, containerRef);
 
       return () => ctx.revert();
     };
-    
+
     loadGSAP();
   }, []);
 
   return (
-    <section ref={containerRef} className="relative min-h-screen w-full bg-black flex items-center pt-32 pb-20">
-      
-      {/* --- BACKGROUND LAYERS --- */}
-      <div className="absolute inset-0 bg-[#030305] -z-50" />
-      
-      {/* Subtle star/particle background */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZyBmaWxsPSIjRkZGIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxjaXJjbGUgY3g9IjMiIGN5PSI4IiByPSIxLjUiIG9wYWNpdHk9Ii40Ii8+PGNpcmNsZSBjeD0iMTg1IiBjeT0iMTI1IiByPSIxIiBvcGFjaXR5PSIuMiIvPjxjaXJjbGUgY3g9IjM1MCIgY3k9IjIzNSIgcj0iMS41IiBvcGFjaXR5PSIuNSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjM1MCIgcj0iMiIgb3BhY2l0eT0iLjMiLz48Y2lyY2xlIGN4PSI4MCIgY3k9IjI4MCIgcj0iMSIgb3BhY2l0eT0iLjIiLz48L2c+PC9zdmc+')] opacity-40 -z-40" />
+    <section
+      ref={containerRef}
+      className="relative min-h-[92vh] lg:min-h-screen w-full bg-black flex items-center pt-28 pb-16 overflow-hidden"
+    >
+      {/* --- CINEMATIC AMBIENCE & LIGHTING --- */}
+      {/* Deep atmospheric base */}
+      <div className="absolute inset-0 bg-[#040406] -z-30" />
 
-      {/* Constellation Lines */}
-      <svg className="absolute inset-0 w-full h-full -z-40 pointer-events-none opacity-30" xmlns="http://www.w3.org/2000/svg">
-        <line x1="30%" y1="20%" x2="50%" y2="45%" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-        <line x1="50%" y1="45%" x2="70%" y2="15%" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-        <circle cx="30%" cy="20%" r="2" fill="white" />
-        <circle cx="50%" cy="45%" r="1.5" fill="white" />
-        <circle cx="70%" cy="15%" r="2" fill="white" />
-      </svg>
+      {/* Subtle directional cinematic aperture beam from top-right */}
+      <div
+        className="absolute -top-32 right-0 w-[60vw] h-[80vh] pointer-events-none -z-20 opacity-60"
+        style={{
+          background:
+            "radial-gradient(ellipse 65% 55% at 75% 25%, oklch(72% 0.18 142 / 0.12) 0%, oklch(65% 0.12 210 / 0.05) 45%, transparent 75%)",
+        }}
+      />
 
-      {/* Single structured gradient — deliberate, not two ambient blobs */}
-      <div className="absolute top-0 right-0 w-[70%] h-full -z-40 pointer-events-none" style={{
-        background: "conic-gradient(from 210deg at 75% 40%, oklch(72% 0.18 142 / 0.06) 0deg, transparent 60deg, oklch(62% 0.16 232 / 0.04) 180deg, transparent 240deg)",
-      }} />
+      {/* Refined architectural grid rule line */}
+      <div className="absolute top-24 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none -z-10" />
 
-      {/* The glowing ring system */}
-      <div className="bg-ring absolute top-[50%] right-[0%] md:right-[5%] -translate-y-1/2 w-[450px] h-[450px] md:w-[900px] md:h-[900px] rounded-full flex items-center justify-center -z-30 pointer-events-none">
-        {/* Outer subtle ring */}
-        <div className="absolute w-full h-full border-[2px] border-blue-400/20 rounded-full shadow-[0_0_120px_rgba(59,130,246,0.2)]" />
-        {/* Inner bright ring */}
-        <div className="absolute w-[92%] h-[92%] border-[2px] border-blue-300/40 rounded-full shadow-[0_0_100px_rgba(59,130,246,0.3),inset_0_0_50px_rgba(59,130,246,0.2)]" />
-        {/* Inner glow core */}
-        <div className="w-[85%] h-[85%] rounded-full bg-blue-500/10 blur-[100px]" />
-      </div>
+      {/* Bottom fade into main body */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none -z-10" />
 
-      {/* Single anchor geometry — bottom-left depth element */}
-      <div className="floating-obj float-2 absolute bottom-[10%] left-[25%] md:left-[35%] w-40 h-40 md:w-56 md:h-56 opacity-70 z-20 pointer-events-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)]">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          <polygon points="50,5 85,35 50,65" fill="#999" />
-          <polygon points="50,5 50,65 15,35" fill="#fff" />
-          <polygon points="15,35 50,65 25,95" fill="#333" />
-          <polygon points="50,65 85,35 75,95" fill="#111" />
-          <polygon points="50,65 75,95 25,95" fill="#000" />
-        </svg>
-      </div>
+      {/* --- MAIN HERO GRID --- */}
+      <div className="container mx-auto px-6 md:px-12 relative z-10 w-full flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
+        {/* LEFT COLUMN: Content & Typography */}
+        <div className="w-full lg:w-[58%] flex flex-col items-start pt-8 lg:pt-0">
+          {/* Eyebrow Status Badge with Liquid Glass Pill */}
+          <div className="hero-fade inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full liquid-glass-subtle mb-6">
+            <span className="relative flex h-2 w-2">
+              <span
+                className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                style={{ backgroundColor: "var(--color-accent)" }}
+              />
+              <span
+                className="relative inline-flex rounded-full h-2 w-2"
+                style={{ backgroundColor: "var(--color-accent)" }}
+              />
+            </span>
+            <span className="font-mono text-[11px] tracking-wider text-neutral-200 uppercase">
+              BCA Student &amp; Founder @ NEXAURA
+            </span>
+          </div>
 
-      {/* Terrain / Bottom fade */}
-      <div className="absolute bottom-0 left-0 w-full h-[45vh] bg-gradient-to-t from-black via-black/95 to-transparent z-10 pointer-events-none" />
-
-      {/* --- CONTENT CONTAINER --- */}
-      <div className="container mx-auto px-8 relative z-20 w-full h-full flex flex-col md:flex-row items-center justify-between pb-10">
-        
-        {/* LEFT COLUMN: Typography & CTAs */}
-        <div className="w-full md:w-1/2 flex flex-col items-start justify-center pt-20 md:pt-0">
-          
-          {/* Eyebrow — no pill, just editorial mono text */}
-          <p className="hero-fade font-mono text-xs text-gray-500 mb-8 tracking-wider">
-            <span style={{ color: "var(--color-accent)" }}>*</span>&nbsp;&nbsp;bca student &nbsp;·&nbsp; india &nbsp;·&nbsp; open to work
-          </p>
-
-          {/* Main Headline */}
-          <h1 className="hero-fade text-[3.5rem] sm:text-[5rem] lg:text-[6.5rem] font-black tracking-tighter leading-[0.9] mb-4 w-full" style={{ overflowWrap: "anywhere" }}>
-            <span className="text-white">HEY. I'M</span> <br />
-            <span className="text-white pr-4 py-2 -my-2">ANAS</span>
-            <span style={{ color: "var(--color-accent)" }} className="-ml-2">.</span>
+          {/* Monumental Headline */}
+          <h1 className="hero-fade text-4xl sm:text-6xl lg:text-7xl xl:text-[5.25rem] font-black tracking-tight leading-[0.95] mb-6 text-white">
+            MOHAMMED <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400">
+              ANAS
+            </span>
+            <span style={{ color: "var(--color-accent)" }}>.</span>
           </h1>
 
-          {/* Subheadline */}
-          <h2 className="hero-fade text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-gray-200 mb-6">
-            Developer. Vibe Coder. <span style={{ color: "var(--color-accent)" }}>Builder.</span>
-          </h2>
+          {/* Filmic Subtitle */}
+          <div className="hero-fade flex items-center gap-3 text-lg sm:text-xl lg:text-2xl font-bold tracking-tight text-neutral-200 mb-5">
+            <span>Web Developer</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
+            <span style={{ color: "var(--color-accent)" }}>Vibe Coder</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-neutral-600" />
+            <span>Builder</span>
+          </div>
 
-          {/* Description */}
-          <p className="hero-fade text-sm lg:text-[15px] text-gray-400 max-w-[420px] leading-relaxed mb-10">
-            {PORTFOLIO_DATA.personal.heroSupportingText}
+          {/* Mission Thesis */}
+          <p className="hero-fade text-neutral-400 text-sm sm:text-base lg:text-[15px] max-w-xl leading-relaxed mb-8">
+            Turning bold concepts into production-grade digital experiences, modern full-stack web applications,
+            and AI-assisted workflows with design clarity and engineering craft.
           </p>
 
-          {/* Buttons */}
-          <div className="hero-fade flex flex-wrap gap-5">
-            <a href="#projects" className="group flex items-center justify-center gap-3 px-8 py-4 text-black font-bold tracking-widest text-xs rounded-full hover:scale-105 transition-all duration-300" style={{ background: "var(--color-accent)", boxShadow: "0 0 30px var(--color-accent-glow)" }}>
-              View my work
-              <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </a>
-            <a 
-              href={`mailto:anas.m77581@gmail.com?subject=Website%20Inquiry&body=Hi%20Anas,%0A%0AI'd%20like%20to%20discuss%20a%20website%20or%20digital%20project%20with%20you.%0A%0AThanks!`}
-              className="group flex items-center justify-center gap-3 px-8 py-4 border border-white/20 bg-[#0a0a0a]/50 backdrop-blur-md text-white font-bold tracking-widest text-xs rounded-full hover:bg-white/10 hover:border-white/40 transition-colors duration-300"
-              aria-label="Email Anas"
+          {/* Tactile Liquid Buttons */}
+          <div className="hero-fade flex flex-wrap items-center gap-4 mb-10 w-full sm:w-auto">
+            <a
+              href="#projects"
+              className="btn-press liquid-btn-primary group inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full text-black font-bold tracking-wide text-xs"
             >
-              Let's build
-              <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              Explore Projects
+              <ArrowUpRight
+                size={15}
+                className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </a>
+
+            <a
+              href="#startup"
+              className="btn-press liquid-btn group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-white font-medium text-xs"
+            >
+              <Sparkles size={14} style={{ color: "var(--color-accent)" }} />
+              NEXAURA Studio
+            </a>
+
+            <a
+              href={`mailto:${PORTFOLIO_DATA.personal.email}?subject=Collaboration%20Inquiry`}
+              className="btn-press liquid-glass-subtle inline-flex items-center justify-center px-5 py-3.5 rounded-full text-neutral-300 hover:text-white font-medium text-xs transition-colors duration-200"
+            >
+              Contact Direct
             </a>
           </div>
 
-          {/* Scroll Indicator */}
-          <div className="hero-fade mt-24 flex-col gap-4 hidden md:flex">
-            <span className="text-[10px] font-medium tracking-[0.2em] text-gray-600 uppercase">Scroll</span>
-            <div className="flex items-center gap-4">
-              <div className="w-5 h-8 border border-white/20 rounded-full flex justify-center p-1">
-                <div className="w-1 h-1 bg-white rounded-full animate-bounce" />
-              </div>
-              <div className="w-24 h-[1px] bg-gradient-to-r from-gray-600 to-transparent" />
+          {/* Proof / Metrics Strip inside Liquid Glass Capsule */}
+          <div className="hero-fade liquid-glass-subtle rounded-2xl p-4 sm:p-5 grid grid-cols-3 gap-6 sm:gap-10 w-full max-w-lg">
+            <div>
+              <span className="block text-xl sm:text-2xl font-black text-white tracking-tight">5+</span>
+              <span className="block text-[11px] font-mono text-neutral-400 uppercase tracking-wider mt-0.5">
+                Shipped Apps
+              </span>
+            </div>
+            <div>
+              <span
+                className="block text-xl sm:text-2xl font-black tracking-tight"
+                style={{ color: "var(--color-accent)" }}
+              >
+                Founder
+              </span>
+              <span className="block text-[11px] font-mono text-neutral-400 uppercase tracking-wider mt-0.5">
+                NEXAURA
+              </span>
+            </div>
+            <div>
+              <span className="block text-xl sm:text-2xl font-black text-white tracking-tight">BCA</span>
+              <span className="block text-[11px] font-mono text-neutral-400 uppercase tracking-wider mt-0.5">
+                Computer Apps
+              </span>
             </div>
           </div>
-
         </div>
 
-        {/* RIGHT COLUMN: Portrait */}
-        <div className="w-full md:w-1/2 relative flex justify-center items-end h-[60vh] md:h-[80vh] lg:h-[90vh] mt-10 md:mt-0 pointer-events-none z-10">
-          
-          {/* Subtle ring behind portrait — one ring, jade tint */}
-          <div className="bg-ring absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[520px] lg:h-[520px] rounded-full pointer-events-none -z-10"
-            style={{ border: "1px solid oklch(72% 0.18 142 / 0.2)", boxShadow: "0 0 60px oklch(72% 0.18 142 / 0.08), inset 0 0 30px oklch(72% 0.18 142 / 0.04)" }}
-          />
+        {/* RIGHT COLUMN: Cinematic Portrait Presentation with Liquid Glass Enclosure */}
+        <div className="w-full lg:w-[42%] flex justify-center lg:justify-end items-center relative">
+          <div
+            ref={portraitRef}
+            className="relative w-[280px] sm:w-[340px] md:w-[380px] lg:w-[420px] aspect-[4/5] rounded-[2rem] overflow-hidden liquid-glass liquid-sheen p-2.5 transition-shadow duration-500 group"
+          >
+            {/* Inner frame with photographic mask and subtle contrast */}
+            <div className="relative w-full h-full rounded-[1.4rem] overflow-hidden bg-neutral-950 flex items-end justify-center">
+              {/* Backlight reflection */}
+              <div
+                className="absolute inset-0 pointer-events-none opacity-40 -z-0"
+                style={{
+                  background:
+                    "radial-gradient(circle at 50% 20%, oklch(72% 0.18 142 / 0.15) 0%, transparent 60%)",
+                }}
+              />
 
-          {/* Small glowing white particle — depth */}
-          <div className="floating-obj float-4 absolute top-[75%] left-[20%] w-3 h-3 md:w-4 md:h-4 rounded-full bg-white/80 pointer-events-none -z-10"
-            style={{ boxShadow: "0 0 12px rgba(255,255,255,0.9), 0 0 30px oklch(72% 0.18 142 / 0.4)" }}
-          />
+              {/* Portrait Image */}
+              <img
+                src="/portrait.png"
+                alt="Mohammed Anas"
+                className="w-full h-full object-cover object-top select-none pointer-events-none filter contrast-[1.05] brightness-[0.98]"
+                style={{
+                  maskImage:
+                    "linear-gradient(to bottom, black 0%, black 78%, rgba(0,0,0,0.4) 92%, transparent 100%)",
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, black 0%, black 78%, rgba(0,0,0,0.4) 92%, transparent 100%)",
+                }}
+                draggable={false}
+              />
 
-          {/* The new True 3D Interactive Portrait */}
-          <div ref={portraitRef} className="absolute inset-0 z-10 flex justify-center items-end pointer-events-auto">
-            <ThreePortrait />
+              {/* Cinematic Vignette Overlay */}
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#040406] via-transparent to-transparent opacity-80" />
+
+              {/* Floating metadata plate */}
+              <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-xl liquid-glass-subtle flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-white tracking-wide">Mohammed Anas</span>
+                  <span className="text-[10px] font-mono text-neutral-300">Founder &amp; Lead Builder</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/10">
+                  <Terminal size={12} style={{ color: "var(--color-accent)" }} />
+                  <span className="text-[10px] font-mono text-neutral-200 font-semibold">NEXAURA</span>
+                </div>
+              </div>
+            </div>
           </div>
-
-
         </div>
       </div>
-
-      {/* --- FLOATING SOCIAL BAR (RIGHT) --- */}
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-6 py-8 px-3 bg-white/5 border border-white/10 rounded-full backdrop-blur-md z-40">
-        <a href={PORTFOLIO_DATA.personal.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-        </a>
-        <a href={PORTFOLIO_DATA.personal.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-        </a>
-        <a 
-          href={`mailto:${PORTFOLIO_DATA.personal.email}?subject=Website%20Inquiry&body=Hi%20Anas,%0A%0AI'd%20like%20to%20discuss%20a%20website%20or%20digital%20project%20with%20you.%0A%0AThanks!`} 
-          className="text-gray-400 hover:text-white transition-colors"
-          aria-label="Email Anas"
-        >
-          <Mail size={20} />
-        </a>
-        <div className="flex flex-col items-center mt-2">
-          <div className="w-[1px] h-12 bg-gradient-to-b from-white/30 to-transparent" />
-          <div className="w-1.5 h-1.5 rounded-full mt-1" style={{ background: "var(--color-accent)", boxShadow: "0 0 10px var(--color-accent-glow)" }} />
-        </div>
-      </div>
-
     </section>
   );
 }

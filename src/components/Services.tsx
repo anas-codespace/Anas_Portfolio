@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { PORTFOLIO_DATA } from "@/data/config";
+import { ArrowUpRight, Code, Laptop, Sparkles } from "lucide-react";
 
 export default function Services() {
   const containerRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadGSAP = async () => {
@@ -14,119 +13,133 @@ export default function Services() {
       gsap.registerPlugin(ScrollTrigger);
 
       const ctx = gsap.context(() => {
-        // Horizontal scroll effect or staggered reveal
         gsap.fromTo(
           ".service-card",
-          { y: 100, opacity: 0, rotateX: 10 },
+          { y: 30, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            rotateX: 0,
-            duration: 1,
-            stagger: 0.2,
+            duration: 0.8,
+            stagger: 0.12,
             ease: "power2.out",
             scrollTrigger: {
               trigger: containerRef.current,
-              start: "top 70%",
-            }
+              start: "top 75%",
+            },
           }
         );
-
-        // Optional mouse movement parallax for cards
-        const cards = document.querySelectorAll('.service-card');
-        cards.forEach((card) => {
-          card.addEventListener('mousemove', (e: any) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const rotateX = ((y - centerY) / centerY) * -10;
-            const rotateY = ((x - centerX) / centerX) * 10;
-            
-            gsap.to(card, {
-              rotateX,
-              rotateY,
-              transformPerspective: 1000,
-              ease: "power2.out",
-              duration: 0.5
-            });
-          });
-          
-          card.addEventListener('mouseleave', () => {
-            gsap.to(card, {
-              rotateX: 0,
-              rotateY: 0,
-              ease: "power2.out",
-              duration: 0.5
-            });
-          });
-        });
-
       }, containerRef);
 
       return () => ctx.revert();
     };
-    
+
     loadGSAP();
   }, []);
 
+  const serviceItems = [
+    {
+      id: "01",
+      icon: Code,
+      title: "Web Engineering & Design",
+      subtitle: "Production Frontend Platforms",
+      description:
+        "Building tailored, highly responsive websites and interactive web experiences utilizing Next.js, React, TypeScript, and modern CSS architectures designed for speed and conversions.",
+      deliverables: ["Responsive Architecture", "Next.js & React 19", "SEO & Performance Optimization"],
+    },
+    {
+      id: "02",
+      icon: Sparkles,
+      title: "Autonomous AI Workflows",
+      subtitle: "Vibe Coding & Rapid Prototyping",
+      description:
+        "Accelerating concept-to-product cycles using generative AI development tools, custom LLM APIs, and intelligent assistant integrations that give software an interactive edge.",
+      deliverables: ["AI Model & Agent Integration", "Rapid Product Prototyping", "Conversational AI Systems"],
+    },
+    {
+      id: "03",
+      icon: Laptop,
+      title: "Digital Products & Systems",
+      subtitle: "End-to-End Solutions",
+      description:
+        "Designing, developing, and publishing real-world digital experiences, enterprise dashboards, and startup platforms from initial scope to live deployment.",
+      deliverables: ["Supabase & Firebase Backends", "Component Design Systems", "Zero-Downtime Deployment"],
+    },
+  ];
+
   return (
-    <section ref={containerRef} className="relative py-32 bg-zinc-950">
-      <div className="container mx-auto px-6">
-        {/* Section heading — left-aligned, not centered */}
-        <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-4">
-          I build ideas <br className="hidden md:block" />
-          <span style={{ color: "var(--color-accent)" }}>into experiences.</span>
-        </h2>
-        <p className="text-gray-500 text-sm mb-16 max-w-sm leading-relaxed">
-          Here's what I bring to projects — the work I do and how I do it.
-        </p>
+    <section
+      id="services"
+      ref={containerRef}
+      className="relative py-28 md:py-36 bg-[#040406] border-t border-white/[0.06] scroll-mt-16"
+    >
+      <div className="container mx-auto px-6 md:px-12">
+        {/* Section Header */}
+        <div className="max-w-2xl mb-16">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full liquid-glass-subtle text-xs font-mono text-neutral-300 mb-5 uppercase tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "var(--color-accent)" }} />
+            Services &amp; Engagement
+          </div>
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-4">
+            Transforming concepts <br className="hidden sm:block" />
+            into digital reality.
+          </h2>
+          <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
+            What I bring to projects — combining modern design aesthetics, full-stack engineering, and AI velocity.
+          </p>
+        </div>
 
-        <div ref={cardsRef} className="flex flex-col gap-6">
-          {/* Featured first card — full width */}
-          {PORTFOLIO_DATA.services[0] && (
-            <div
-              key={PORTFOLIO_DATA.services[0].id}
-              className="service-card glass rounded-2xl p-10 md:p-14 flex flex-col md:flex-row md:items-center justify-between gap-8 border border-white/5 hover:border-white/15 transition-colors group cursor-default"
-              style={{ minHeight: "220px" }}
-            >
-              <div className="flex-1">
-                <span className="text-6xl md:text-8xl font-black mb-4 block transition-all duration-500 origin-left" style={{ color: "var(--color-accent)", opacity: 0.15 }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.4")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.15")}
-                >
-                  {PORTFOLIO_DATA.services[0].id}
-                </span>
-                <h3 className="text-3xl md:text-4xl font-bold mb-3">{PORTFOLIO_DATA.services[0].title}</h3>
-              </div>
-              <p className="text-gray-400 leading-relaxed md:max-w-sm md:text-right">{PORTFOLIO_DATA.services[0].description}</p>
-            </div>
-          )}
-
-          {/* Remaining cards — 2-column asymmetric */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {PORTFOLIO_DATA.services.slice(1).map((service, idx) => (
+        {/* Services Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {serviceItems.map((item) => {
+            const Icon = item.icon;
+            return (
               <div
-                key={service.id}
-                className={`service-card glass rounded-2xl p-10 flex flex-col justify-between border border-white/5 hover:border-white/15 transition-colors group cursor-default ${idx === 0 ? "md:col-span-1" : ""}`}
-                style={{ minHeight: "320px" }}
+                key={item.id}
+                className="service-card liquid-glass liquid-sheen rounded-3xl p-8 sm:p-10 flex flex-col justify-between hover:border-white/20 transition-all duration-200 group"
               >
-                <span className="text-5xl font-black mb-6 block transition-all duration-500 origin-left" style={{ color: "var(--color-accent)", opacity: 0.12 }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.35")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.12")}
-                >
-                  {service.id}
-                </span>
                 <div>
-                  <h3 className="text-2xl font-bold mb-3">{service.title}</h3>
-                  <p className="text-gray-400 leading-relaxed text-sm">{service.description}</p>
+                  {/* Top Bar with Number and Icon */}
+                  <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/[0.06]">
+                    <span
+                      className="text-4xl font-black font-mono tracking-tight text-neutral-600 group-hover:text-neutral-200 transition-colors"
+                      style={{ color: "var(--color-accent)" }}
+                    >
+                      {item.id}
+                    </span>
+                    <div className="w-11 h-11 rounded-xl liquid-glass-subtle flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                      <Icon size={18} style={{ color: "var(--color-accent)" }} />
+                    </div>
+                  </div>
+
+                  {/* Titles */}
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 block mb-1 font-semibold">
+                    {item.subtitle}
+                  </span>
+                  <h3 className="text-2xl font-black text-white tracking-tight mb-4">{item.title}</h3>
+
+                  {/* Description */}
+                  <p className="text-sm text-neutral-300 leading-relaxed mb-8">{item.description}</p>
+                </div>
+
+                {/* Deliverables Pills */}
+                <div className="pt-6 border-t border-white/[0.06]">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block mb-3 font-semibold">
+                    Key Highlights
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {item.deliverables.map((deliv, i) => (
+                      <span
+                        key={i}
+                        className="text-[11px] font-mono px-3 py-1 rounded-full liquid-glass-subtle text-neutral-300"
+                      >
+                        {deliv}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </section>

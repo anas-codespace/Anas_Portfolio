@@ -58,7 +58,7 @@ export default function FizzyMascot({
       tabIndex={shouldBeVisible ? 0 : -1}
       onKeyDown={(e) => { if (shouldBeVisible && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggleChat(); } }}
     >
-      <div className={`absolute top-[15%] -left-8 -translate-x-full bg-zinc-900 border border-white/10 px-4 py-2 rounded-xl text-xs md:text-sm font-bold text-white whitespace-nowrap shadow-[0_10px_30px_rgba(0,0,0,0.8)] transition-all duration-300 ${tCls}`}>
+      <div className={`absolute top-[15%] -left-8 -translate-x-full liquid-glass-subtle px-4 py-2 rounded-xl text-xs md:text-sm font-bold text-white whitespace-nowrap shadow-[0_10px_30px_rgba(0,0,0,0.8)] transition-all duration-300 ${tCls}`}>
         Hey there!
         <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-zinc-900 border-r border-t border-white/10 rotate-45" />
       </div>

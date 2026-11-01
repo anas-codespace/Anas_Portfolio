@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Manrope } from "next/font/google";
 import "./globals.css";
 import SmoothScroller from "@/components/SmoothScroller";
 import Navigation from "@/components/Navigation";
+import LiquidGlassTracker from "@/components/LiquidGlassTracker";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <SmoothScroller>
+          <LiquidGlassTracker />
           <Navigation />
           {children}
         </SmoothScroller>
